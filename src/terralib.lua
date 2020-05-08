@@ -4363,6 +4363,14 @@ function terra.typeof(obj)
     return terra.types.ctypetoterra[tonumber(ffi.typeof(obj))]
 end
 
+-- Initialize ctypetoterra for all basic types, so that typeof() does not crash
+for k,t in pairs(terra.types) do
+    -- All types except non-pointer functions
+    if T.Type:isclassof(t) and (t:ispointer() or (not t:isfunction())) then
+        t:cstring()
+    end
+end
+
 --equivalent to Lua's type function, but knows about concepts in Terra to improve error reporting
 function terra.type(t)
     if terra.isfunction(t) then return "terrafunction"
